@@ -56,7 +56,7 @@ def protected():
     
     # Возвращаем защищённые данные (например, информацию о пользователе)
     user = users_collection.find_one({'_id': pymongo.ObjectId(user_id)})
-    return jsonify({'message': 'Доступ разрешён', 'user_id': str(user['_id'])}), 200
+    return jsonify({'message': 'Доступ разрешён1', 'user_id': str(user['_id'])}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
