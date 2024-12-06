@@ -2,7 +2,6 @@ import os
 import jwt
 import datetime
 from flask import Flask, request, jsonify
-from werkzeug.security import check_password_hash
 import pymongo
 
 # Подключение к MongoDB
