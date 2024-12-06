@@ -7,7 +7,7 @@ import pymongo
 uri = 'mongodb+srv://bober25:121212adadad@govno.2cqxu.mongodb.net/'
 client = pymongo.MongoClient(uri)
 db = client['test1']
-users_collection = db['Session_test_2']
+users_collection = db['Session_test_3']
 
 app = Flask(__name__)
 
@@ -24,7 +24,7 @@ def generate_token(user_id):
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
-    password = data
+    password = data.get('password')
 
     # Найдем пользователя в базе данных по паролю
     user = users_collection.find_one({'password': password})
