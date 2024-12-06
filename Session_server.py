@@ -24,7 +24,7 @@ def generate_token(user_id):
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
-    password = data.get('password')
+    password = data
 
     # Найдем пользователя в базе данных по паролю
     user = users_collection.find_one({'password': password})
