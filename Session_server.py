@@ -1,4 +1,3 @@
-import os
 import jwt
 import datetime
 from flask import Flask, request, jsonify
