@@ -18,15 +18,17 @@ app.config['SECRET_KEY'] = 'supersecretkey'
 def generate_token(user_id):
     expiration_time = datetime.datetime.utcnow() + datetime.timedelta(hours=48)  # Токен действителен 48 часов
     
-    # Используем объект PyJWT для создания токена
-    token = jwt.encode(
+    # Создаем объект PyJWT
+    jwt_instance = jwt.PyJWT()
+    
+    # Используем метод encode для создания токена
+    token = jwt_instance.encode(
         {'user_id': str(user_id), 'exp': expiration_time},
         app.config['SECRET_KEY'],
         algorithm='HS256'
     )
     return token
 
-# Маршрут для логина
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
