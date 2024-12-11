@@ -6,8 +6,8 @@ import pymongo
 # Подключение к MongoDB
 uri = 'mongodb+srv://bober25:121212adadad@govno.2cqxu.mongodb.net/'
 client = pymongo.MongoClient(uri)
-db = client['test1']
-users_collection = db['Session_test_3']
+db = client['test2']
+users_collection = db['With_ID_test_2(11.12)']
 
 app = Flask(__name__)
 
@@ -36,7 +36,6 @@ def login():
     if not user:
         return jsonify({'message': 'Пользователь не найден'}), 404
     
-    # Генерируем токен для пользователя
     token = generate_token(user['_id'])
     return jsonify({'token': token}), 200
 
