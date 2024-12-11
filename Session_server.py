@@ -1,8 +1,9 @@
 import jwt
 import datetime
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import pymongo
 from flask_cors import CORS
+import os
 
 # Подключение к MongoDB
 uri = 'mongodb+srv://bober25:121212adadad@govno.2cqxu.mongodb.net/'
@@ -10,7 +11,8 @@ client = pymongo.MongoClient(uri)
 db = client['test2']
 users_collection = db['With_ID_test_2(11.12)']
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='dist', static_url_path='')
+
 CORS(app, origins=["https://frontstartnew-production.up.railway.app"])
 
 # Секретный ключ для подписи JWT (должен быть секретным и безопасным)
@@ -61,6 +63,12 @@ def protected():
     # Возвращаем защищённые данные (например, информацию о пользователе)
     user = users_collection.find_one({'_id': pymongo.ObjectId(user_id)})
     return jsonify({'message': 'Доступ разрешён1', 'user_id': str(user['_id'])}), 200
+
+# Обработчик для отдачи index.html для всех путей, кроме API
+@app.route('/<path:path>', methods=['GET'])
+def catch_all(path):
+    if not path.startswith('api'):  # Все пути, которые не начинаются с 'api', передаем на фронтенд
+        return send_from_directory(os.path.join(app.static_folder), 'index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
