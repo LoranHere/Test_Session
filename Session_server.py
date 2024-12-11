@@ -2,6 +2,7 @@ import jwt
 import datetime
 from flask import Flask, request, jsonify
 import pymongo
+from flask_cors import CORS
 
 # Подключение к MongoDB
 uri = 'mongodb+srv://bober25:121212adadad@govno.2cqxu.mongodb.net/'
@@ -10,6 +11,7 @@ db = client['test2']
 users_collection = db['With_ID_test_2(11.12)']
 
 app = Flask(__name__)
+CORS(app, origins=["https://frontstartnew-production.up.railway.app"])
 
 # Секретный ключ для подписи JWT (должен быть секретным и безопасным)
 app.config['SECRET_KEY'] = 'supersecretkey'
