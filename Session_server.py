@@ -11,7 +11,8 @@ client = pymongo.MongoClient(uri)
 db = client['test2']
 users_collection = db['With_ID_test_2(11.12)']
 
-app = Flask(__name__, static_folder='dist')  # Указываем папку с фронтендом
+# Указываем папку с фронтендом, используя относительный путь
+app = Flask(__name__, static_folder=os.path.join(os.getcwd(), 'dist'))  # Указываем абсолютный путь к папке dist
 
 CORS(app, origins=["https://comeback-front-production.up.railway.app"])
 
@@ -74,7 +75,5 @@ def catch_all(path):
 def main():
     return send_from_directory(os.path.join(app.root_path, 'dist'), 'index.html')
 
-
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
