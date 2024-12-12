@@ -13,7 +13,7 @@ users_collection = db['With_ID_test_2(11.12)']
 
 app = Flask(__name__)
 
-CORS(app, origins=["https://frontstartnew-production.up.railway.app"])
+CORS(app, origins=["https://comeback-front-production.up.railway.app"])
 
 # Секретный ключ для подписи JWT
 app.config['SECRET_KEY'] = 'supersecretkey'
