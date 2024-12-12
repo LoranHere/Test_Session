@@ -11,7 +11,7 @@ client = pymongo.MongoClient(uri)
 db = client['test2']
 users_collection = db['With_ID_test_2(11.12)']
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='dist')  # Указываем папку с фронтендом
 
 CORS(app, origins=["https://comeback-front-production.up.railway.app"])
 
@@ -68,7 +68,7 @@ def protected():
 @app.route('/<path:path>', methods=['GET'])
 def catch_all(path):
     if not path.startswith('api'):  # Все пути, которые не начинаются с 'api', передаем на фронтенд
-        return send_from_directory(os.path.join(app.dist), 'index.html')
+        return send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
