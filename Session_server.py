@@ -15,13 +15,12 @@ app = Flask(__name__)
 
 CORS(app, origins=["https://frontstartnew-production.up.railway.app"])
 
-# Секретный ключ для подписи JWT (должен быть секретным и безопасным)
+# Секретный ключ для подписи JWT
 app.config['SECRET_KEY'] = 'supersecretkey'
 
 # Функция для создания токена
 def generate_token(user_id):
     expiration_time = datetime.datetime.utcnow() + datetime.timedelta(hours=48)  # Токен действителен 48 часов
-    # Создаем токен
     token = jwt.encode(
         {'user_id': str(user_id), 'exp': expiration_time},
         app.config['SECRET_KEY'],
@@ -62,9 +61,10 @@ def protected():
     
     # Возвращаем защищённые данные (например, информацию о пользователе)
     user = users_collection.find_one({'_id': pymongo.ObjectId(user_id)})
-    return jsonify({'message': 'Доступ разрешён1', 'user_id': str(user['_id'])}), 200
+    return jsonify({'message': 'Доступ разрешён', 'user_id': str(user['_id'])}), 200
 
 # Обработчик для отдачи index.html для всех путей, кроме API
+@app.route('/', defaults={'path': ''})
 @app.route('/<path:path>', methods=['GET'])
 def catch_all(path):
     if not path.startswith('api'):  # Все пути, которые не начинаются с 'api', передаем на фронтенд
