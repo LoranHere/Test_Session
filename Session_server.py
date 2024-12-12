@@ -70,5 +70,11 @@ def catch_all(path):
     if not path.startswith('api'):  # Все пути, которые не начинаются с 'api', передаем на фронтенд
         return send_from_directory(app.static_folder, 'index.html')
 
+@app.route('/main', methods=['GET'])
+def main():
+    return send_from_directory(os.path.join(app.root_path, 'dist'), 'index.html')
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)
