@@ -12,7 +12,7 @@ db = client['test2']
 users_collection = db['With_ID_test_2(11.12)']
 
 # Указываем папку с фронтендом, используя относительный путь
-app = Flask(__name__, static_folder=os.path.join(os.getcwd(), 'dist'))  # Указываем абсолютный путь к папке dist
+app = Flask(__name__, static_folder='dist')  # Относительный путь для статики
 
 CORS(app, origins=["https://comeback-front-production.up.railway.app"])
 
@@ -73,7 +73,9 @@ def catch_all(path):
 
 @app.route('/main', methods=['GET'])
 def main():
+    # Отдаем index.html для маршрута '/main'
     return send_from_directory(os.path.join(app.root_path, 'dist'), 'index.html')
 
 if __name__ == '__main__':
+    # Для Railway нужно запускать с host='0.0.0.0', чтобы сервер был доступен извне
     app.run(debug=True, host='0.0.0.0', port=5000)
