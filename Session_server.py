@@ -1,6 +1,6 @@
 import jwt
 import datetime
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, redirect, url_for
 import pymongo
 from flask_cors import CORS
 import os
@@ -30,18 +30,17 @@ def generate_token(user_id):
     )
     return token
 
+
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
     password = data.get('password')
-
-    # Найдем пользователя в базе данных по паролю
     user = users_collection.find_one({'password': password})
     
     if not user:
         return jsonify({'message': 'Пользователь не найден'}), 404
-    
     token = generate_token(user['_id'])
+
     return jsonify({'token': token}), 200
 
 # Защищённый маршрут, доступный только для авторизованных пользователей
@@ -50,9 +49,12 @@ def protected():
     token = request.headers.get('Authorization')  # Получаем токен из заголовка
     
     if not token:
-        return jsonify({'message': 'Токен не предоставлен'}), 403
-    print(token)
-    token = token.replace('Bearer ', '')  # Убираем префикс Bearer
+        return redirect('')
+
+    try:
+        token = token.replace('Bearer ', '')  # Убираем префикс Bearer
+    except Exception:
+        return jsonify({'message': 'Токен имеет не тот формат'}), 401
 
     try:
         # Проверяем токен
@@ -63,6 +65,8 @@ def protected():
         return jsonify({'message': 'Токен истёк'}), 401
     except jwt.InvalidTokenError:
         return jsonify({'message': 'Неверный токен'}), 401
+    except Exception as e:
+        return jsonify({'message': 'Error'}), 401
     
     # Возвращаем защищённые данные (например, информацию о пользователе)
     user = users_collection.find_one({'_id': ObjectId(user_id)})
@@ -92,7 +96,7 @@ def catch_all(path):
 
     else:
         # Если токен не найден, редиректим на страницу логина или возвращаем ошибку
-        return jsonify({'message': 'Не авторизован'}), 401
+        return redirect('')
 
 
 
