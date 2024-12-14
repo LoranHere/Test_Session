@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify, send_from_directory
 import pymongo
 from flask_cors import CORS
 import os
+from bson import ObjectId
 
 # Подключение к MongoDB
 uri = 'mongodb+srv://bober25:121212adadad@govno.2cqxu.mongodb.net/'
@@ -14,7 +15,7 @@ users_collection = db['With_ID_test_2(11.12)']
 # Указываем папку с фронтендом, используя относительный путь
 app = Flask(__name__, static_folder='dist')  # Относительный путь для статики
 
-CORS(app, origins=["https://comeback-front-production.up.railway.app"])
+CORS(app, origins=["http://localhost:3000"])
 
 # Секретный ключ для подписи JWT
 app.config['SECRET_KEY'] = 'supersecretkey'
@@ -50,32 +51,53 @@ def protected():
     
     if not token:
         return jsonify({'message': 'Токен не предоставлен'}), 403
-    
+    print(token)
+    token = token.replace('Bearer ', '')  # Убираем префикс Bearer
+
     try:
         # Проверяем токен
         decoded_token = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
         user_id = decoded_token['user_id']
+
     except jwt.ExpiredSignatureError:
         return jsonify({'message': 'Токен истёк'}), 401
     except jwt.InvalidTokenError:
         return jsonify({'message': 'Неверный токен'}), 401
     
     # Возвращаем защищённые данные (например, информацию о пользователе)
-    user = users_collection.find_one({'_id': pymongo.ObjectId(user_id)})
-    return jsonify({'message': 'Доступ разрешён', 'user_id': str(user['_id'])}), 200
+    user = users_collection.find_one({'_id': ObjectId(user_id)})
+    return jsonify({'message': 'Good access', 'user_id': str(user['_id'])}), 200
 
-# Обработчик для отдачи index.html для всех путей, кроме API
-@app.route('/', defaults={'path': ''})
 @app.route('/<path:path>', methods=['GET'])
 def catch_all(path):
-    if not path.startswith('api'):  # Все пути, которые не начинаются с 'api', передаем на фронтенд
-        return send_from_directory(app.static_folder, 'index.html')
+    if path.startswith("api"):  # API-запросы обрабатываются отдельно
+        return jsonify({'message': 'API доступен'}), 404
+    
+    # Проверяем авторизацию
+    token = request.headers.get('Authorization')
+    if token:
+        token = token.replace('Bearer ', '')  # Убираем префикс Bearer
 
-@app.route('/main', methods=['GET'])
-def main():
-    # Отдаем index.html для маршрута '/main'
-    return send_from_directory(os.path.join(app.root_path, 'dist'), 'index.html')
+        try:
+            # Декодируем токен и проверяем его
+            decoded_token = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            user_id = decoded_token['user_id']
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': 'Токен истёк'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'message': 'Неверный токен'}), 401
+
+        # Пользователь авторизован — отправляем файл index.html
+        return send_from_directory(os.path.join(app.root_path, 'dist'), 'index.html')
+
+    else:
+        # Если токен не найден, редиректим на страницу логина или возвращаем ошибку
+        return jsonify({'message': 'Не авторизован'}), 401
+
+
+
+
 
 if __name__ == '__main__':
     # Для Railway нужно запускать с host='0.0.0.0', чтобы сервер был доступен извне
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='localhost', port=5000)
