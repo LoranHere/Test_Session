@@ -49,7 +49,7 @@ def protected():
     token = request.headers.get('Authorization')  # Получаем токен из заголовка
     
     if not token:
-        return redirect('')
+        return jsonify({'message': 'No token'}), 401
 
     try:
         token = token.replace('Bearer ', '')  # Убираем префикс Bearer
@@ -96,7 +96,7 @@ def catch_all(path):
 
     else:
         # Если токен не найден, редиректим на страницу логина или возвращаем ошибку
-        return redirect('')
+        return jsonify({'message': 'No token'}), 401
 
 
 
