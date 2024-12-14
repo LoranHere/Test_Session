@@ -15,7 +15,7 @@ users_collection = db['With_ID_test_2(11.12)']
 # Указываем папку с фронтендом, используя относительный путь
 app = Flask(__name__, static_folder='dist')  # Относительный путь для статики
 
-CORS(app, origins=["http://localhost:3000"])
+CORS(app, origins=["https://comeback-front-production.up.railway.app"])
 
 # Секретный ключ для подписи JWT
 app.config['SECRET_KEY'] = 'supersecretkey'
@@ -100,4 +100,4 @@ def catch_all(path):
 
 if __name__ == '__main__':
     # Для Railway нужно запускать с host='0.0.0.0', чтобы сервер был доступен извне
-    app.run(debug=True, host='localhost', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5000)
